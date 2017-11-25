@@ -8,6 +8,7 @@ import {
   getIsAuthFetching,
   getRecommendations,
   getFollowingList,
+  getIsFetchingFollowingList,
 } from '../../reducers';
 import { updateRecommendations } from '../../user/userActions';
 import InterestingPeople from '../../components/Sidebar/InterestingPeople';
@@ -16,6 +17,7 @@ import StartNow from '../../components/Sidebar/StartNow';
 import SignUp from '../../components/Sidebar/SignUp';
 import PostRecommendation from '../../components/Sidebar/PostRecommendation';
 import Loading from '../../components/Icon/Loading';
+import UserActivitySearch from '../../activity/UserActivitySearch';
 import WalletSidebar from '../../components/Sidebar/WalletSidebar';
 
 @withRouter
@@ -26,6 +28,7 @@ import WalletSidebar from '../../components/Sidebar/WalletSidebar';
     isAuthFetching: getIsAuthFetching(state),
     recommendations: getRecommendations(state),
     followingList: getFollowingList(state),
+    isFetchingFollowingList: getIsFetchingFollowingList(state),
   }),
   {
     updateRecommendations,
@@ -40,6 +43,7 @@ export default class RightSidebar extends React.Component {
     recommendations: PropTypes.arrayOf(PropTypes.shape({ name: PropTypes.string })).isRequired,
     updateRecommendations: PropTypes.func,
     followingList: PropTypes.arrayOf(PropTypes.string).isRequired,
+    isFetchingFollowingList: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -56,6 +60,7 @@ export default class RightSidebar extends React.Component {
       showPostRecommendation,
       isAuthFetching,
       followingList,
+      isFetchingFollowingList,
     } = this.props;
 
     if (isAuthFetching) {
@@ -66,6 +71,8 @@ export default class RightSidebar extends React.Component {
       <div>
         {!authenticated && <SignUp />}
         <Switch>
+          <Route path="/activity" render={() => <UserActivitySearch />} />
+          <Route path="/@:name/activity" render={() => <UserActivitySearch />} />
           <Route path="/@:name/transfers" render={() => <WalletSidebar />} />
           <Route
             path="/@:name"
@@ -74,6 +81,7 @@ export default class RightSidebar extends React.Component {
               <InterestingPeopleWithAPI
                 authenticatedUser={authenticatedUser}
                 followingList={followingList}
+                isFetchingFollowingList={isFetchingFollowingList}
               />}
           />
           <Route
